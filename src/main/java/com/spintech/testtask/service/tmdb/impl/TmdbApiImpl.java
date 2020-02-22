@@ -20,13 +20,13 @@ public class TmdbApiImpl implements TmdbApi {
     @Value("${tmdb.api.base.url}")
     private String tmdbApiBaseUrl;
 
-    public String popularTVShows() throws IllegalArgumentException {
+    @Override
+    public String getPopularTVShows() throws IllegalArgumentException {
         try {
             String url = getTmdbUrl("/tv/popular");
 
             RestTemplate restTemplate = new RestTemplate();
-            ResponseEntity<String> response
-                    = restTemplate.getForEntity(url, String.class);
+            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
 
             if (!response.getStatusCode().is2xxSuccessful()) {
                 return null;
@@ -40,11 +40,10 @@ public class TmdbApiImpl implements TmdbApi {
     }
 
     private String getTmdbUrl(String tmdbItem) throws URISyntaxException {
-        StringBuilder builder = new StringBuilder(tmdbApiBaseUrl);
-        builder.append(tmdbItem);
-        URIBuilder uriBuilder = new URIBuilder(builder.toString());
-        uriBuilder.addParameter("language", tmdbLanguage);
-        uriBuilder.addParameter("api_key", tmdbApiKey);
-        return uriBuilder.build().toString();
+        URIBuilder builder = new URIBuilder(tmdbApiBaseUrl + tmdbItem);
+
+        builder.addParameter("language", tmdbLanguage);
+        builder.addParameter("api_key", tmdbApiKey);
+        return builder.build().toString();
     }
 }
